@@ -1,0 +1,13 @@
+{
+    "apps": [
+      {
+        "name": "HL7Server_dev",
+        "script": "HL7Server_dev.php",
+        "interpreter": "php",
+        "args": [],
+        "watch": false,
+        "log_date_format": "YYYY-MM-DD HH:mm Z"
+      }
+    ]
+  }
+  

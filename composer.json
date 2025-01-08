@@ -1,0 +1,8 @@
+{
+    "require": {
+        "react/socket": "^1.15",
+        "react/http": "^1.10",
+        "cboden/ratchet": "^0.4.4",
+        "ratchet/pawl": "^0.4.1"
+    }
+}
