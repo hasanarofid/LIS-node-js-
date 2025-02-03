@@ -3,14 +3,14 @@ var time = null;
 var data_b = [];
 data_b[1] = [];
 
-// Membuat server WebSocket pada port 1177
+// Membuat server WebSocket pada port 1177 
 const wss = new WebSocket.Server({ port: 1177 });
 
 wss.on("connection", function connection(ws) {
   console.log("Klien terhubung.");
 
   ws.on("message", function incoming(message) {
-    console.log(JSON.parse(message));
+    // console.log(JSON.parse(message));
 
     savemessage(message);
   });
