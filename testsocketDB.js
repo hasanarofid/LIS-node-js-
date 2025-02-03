@@ -2,11 +2,11 @@ const WebSocket = require('ws');
 const { Client } = require('pg');
 
 const client = new Client({
-    user: 'Bayu',
-    host: '10.1.1.68',
-    database: 'simpp-dev',
-    password: 'Tungkak88',
-    port: 5487,
+    user: 'itki',
+    host: '10.1.1.140',
+    database: 'koneksi-alat',
+    password: 'soetomo_dr',
+    port: 5432,
 });
 
 // Membuat server WebSocket
