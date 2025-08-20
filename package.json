@@ -4,7 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node HL7Server.js",
+    "start:php": "php HL7Server.php",
+    "start:ws": "node server.js",
+    "start:monitoring": "node monitoring.js",
+    "start:bot": "node bot.js",
+    "dev": "pm2 start pm2.config_dev.json",
+    "prod": "pm2 start pm2.config.json",
+    "stop": "pm2 stop all",
+    "restart": "pm2 restart all",
+    "status": "pm2 status",
+    "logs": "pm2 logs"
   },
   "keywords": [],
   "author": "",
