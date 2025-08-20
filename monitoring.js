@@ -22,8 +22,32 @@ const TelegramBot = require("node-telegram-bot-api");
 // Token API bot Telegram yang diperoleh dari BotFather
 const token = "7084656625:AAGdIBgJI8zI9NVboAB69o4t8Ttvwdc3qQ8";
 
-// Inisialisasi bot Telegram
-const bot = new TelegramBot(token, { polling: true });
+// Inisialisasi bot Telegram dengan error handling
+let bot;
+try {
+    bot = new TelegramBot(token, { 
+        polling: true,
+        request: {
+            timeout: 10000
+        }
+    });
+    
+    bot.on('error', (error) => {
+        console.log(' :-> Bot error:', error.message);
+        if (error.code === 'ETELEGRAM' && error.response?.body?.error_code === 409) {
+            console.log(' :-> Bot instance lain sedang berjalan, menghentikan polling...');
+            bot.stopPolling();
+        }
+    });
+    
+    bot.on('polling_error', (error) => {
+        console.log(' :-> Polling error:', error.message);
+    });
+    
+} catch (error) {
+    console.log(' :-> Error initializing bot:', error.message);
+    bot = null;
+}
 
 // Daftar perintah yang tersedia untuk bot Telegram
 const commands = [
@@ -65,7 +89,8 @@ function getPM2ProcessStatus(processName) {
           resolve(status);
         } else {
           pm2.disconnect();
-          reject(new Error(`Process ${processName} not found`));
+          // Return status "stopped" jika process tidak ditemukan
+          resolve("stopped");
         }
       });
     });
@@ -172,7 +197,8 @@ function kirimSemuaProses() {
           }
         } else {
           pm2.disconnect();
-          reject(new Error(`Process ${processName} not found`));
+          // Return status "stopped" jika process tidak ditemukan
+          resolve("stopped");
         }
       });
     });

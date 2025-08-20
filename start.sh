@@ -10,11 +10,25 @@ echo "=========================================="
 # Fungsi untuk mengecek apakah port sudah digunakan
 check_port() {
     local port=$1
-    if netstat -tuln | grep -q ":$port "; then
-        echo "⚠️  Port $port sudah digunakan!"
-        return 1
+    # Gunakan ss sebagai alternatif netstat
+    if command -v ss &> /dev/null; then
+        if ss -tuln | grep -q ":$port "; then
+            echo "⚠️  Port $port sudah digunakan!"
+            return 1
+        else
+            echo "✅ Port $port tersedia"
+            return 0
+        fi
+    elif command -v netstat &> /dev/null; then
+        if netstat -tuln | grep -q ":$port "; then
+            echo "⚠️  Port $port sudah digunakan!"
+            return 1
+        else
+            echo "✅ Port $port tersedia"
+            return 0
+        fi
     else
-        echo "✅ Port $port tersedia"
+        echo "⚠️  Tidak bisa mengecek port (ss/netstat tidak tersedia)"
         return 0
     fi
 }
@@ -65,6 +79,13 @@ install_dependencies() {
 # Fungsi untuk menjalankan dalam mode development
 start_dev() {
     echo "🚀 Menjalankan dalam mode development..."
+    
+    # Hentikan process yang mungkin masih berjalan
+    echo "🛑 Menghentikan process yang mungkin masih berjalan..."
+    pkill -f "HL7Server.php" 2>/dev/null
+    pkill -f "monitoring.js" 2>/dev/null
+    pkill -f "bot.js" 2>/dev/null
+    sleep 2
     
     # Cek port
     check_port 6666 || exit 1
@@ -119,7 +140,13 @@ show_status() {
     
     echo ""
     echo "🔌 Port Status:"
-    netstat -tuln | grep -E ":(6666|2222|5678)" || echo "Tidak ada service yang berjalan"
+    if command -v ss &> /dev/null; then
+        ss -tuln | grep -E ":(6666|2222|5678)" || echo "Tidak ada service yang berjalan"
+    elif command -v netstat &> /dev/null; then
+        netstat -tuln | grep -E ":(6666|2222|5678)" || echo "Tidak ada service yang berjalan"
+    else
+        echo "Tidak bisa mengecek port (ss/netstat tidak tersedia)"
+    fi
 }
 
 # Fungsi untuk menghentikan semua service

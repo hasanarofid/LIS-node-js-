@@ -19,9 +19,26 @@ use React\Socket\Connector as ReactConnector;
  */
 function fetchServerIP()
 {
-    $curlCommand = 'curl https://e-mon.rsudrsoetomo.jatimprov.go.id/api/settings';
-    $ip_server_response = shell_exec($curlCommand);
-    return json_decode($ip_server_response, true);
+    try {
+        $curlCommand = 'curl -s --connect-timeout 5 --max-time 10 https://e-mon.rsudrsoetomo.jatimprov.go.id/api/settings';
+        $ip_server_response = shell_exec($curlCommand);
+        
+        if ($ip_server_response === null || empty($ip_server_response)) {
+            echo "#-> Warning: Tidak bisa mengakses API settings\n";
+            return null;
+        }
+        
+        $decoded = json_decode($ip_server_response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo "#-> Warning: Response API tidak valid JSON\n";
+            return null;
+        }
+        
+        return $decoded;
+    } catch (Exception $e) {
+        echo "#-> Warning: Error mengakses API: " . $e->getMessage() . "\n";
+        return null;
+    }
 }
 
 /**
@@ -162,9 +179,18 @@ class ReactTCPServer
 
 // Mengambil pengaturan IP server dan port dari endpoint
 $serverSettings = fetchServerIP();
-$ip_server = $serverSettings['data']['ip_server'];
-$port = $serverSettings['data']['port_terima'];
-$port_keluar = $serverSettings['data']['port_keluar'];
+
+// Fallback jika API tidak bisa diakses
+if ($serverSettings === null || !isset($serverSettings['data'])) {
+    echo "#-> Warning: Tidak bisa mengakses API, menggunakan konfigurasi default\n";
+    $ip_server = '0.0.0.0';
+    $port = 6666;
+    $port_keluar = 6666;
+} else {
+    $ip_server = $serverSettings['data']['ip_server'] ?? '0.0.0.0';
+    $port = $serverSettings['data']['port_terima'] ?? 6666;
+    $port_keluar = $serverSettings['data']['port_keluar'] ?? 6666;
+}
 
 // Memeriksa apakah port sedang digunakan dan menanganinya
 $output = checkPortUsage($port);
