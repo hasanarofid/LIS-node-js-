@@ -5,7 +5,7 @@
 $db_host = 'localhost';
 $db_name = 'lis_system';
 $db_user = 'root';
-$db_pass = '';
+$db_pass = 'hasanitki';
 
 // PDO connection
 try {

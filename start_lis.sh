@@ -109,11 +109,11 @@ setup_database() {
     # Check if MySQL is running
     if command_exists mysql; then
         # Try to connect to MySQL
-        if mysql -u root -e "SELECT 1;" >/dev/null 2>&1; then
+        if mysql -u root -phasanitki -e "SELECT 1;" >/dev/null 2>&1; then
             print_success "MySQL connection successful"
             
             # Create database if it doesn't exist
-            mysql -u root -e "CREATE DATABASE IF NOT EXISTS lis_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+            mysql -u root -phasanitki -e "CREATE DATABASE IF NOT EXISTS lis_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
             if [ $? -eq 0 ]; then
                 print_success "Database 'lis_system' created/verified"
             else
@@ -246,14 +246,14 @@ create_sample_data() {
     print_status "Creating sample data..."
     
     # Create sample devices
-    mysql -u root lis_system -e "
+    mysql -u root -phasanitki lis_system -e "
     INSERT IGNORE INTO devices (name, type, port, baudrate, status) VALUES 
     ('Sysmex XN-1000', 'sysmex', 'COM1', 9600, 'online'),
     ('RS232 Analyzer', 'rs232', 'COM2', 19200, 'online');
     " 2>/dev/null
     
     # Create sample patients
-    mysql -u root lis_system -e "
+    mysql -u root -phasanitki lis_system -e "
     INSERT IGNORE INTO patients (id, name, birth_date, gender) VALUES 
     ('P20241201001', 'John Doe', '1985-03-15', 'Male'),
     ('P20241201002', 'Jane Smith', '1990-07-22', 'Female');
